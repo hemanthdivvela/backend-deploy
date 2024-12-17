@@ -48,7 +48,7 @@ pipeline {
             steps {
                 sh """
                     cd terraform
-                    terraform apply -auto-approve
+                    terraform apply -auto-approve -var="app_version=${params.appVersion}"
 
                 """
             }
