@@ -11,10 +11,10 @@ pipeline {
     parameters {
         string(name: 'appVersion', defaultValue: '1.1.0', description: 'what is the application version?')
     }
-    // environment{
-    //     def appVersion = '' //variable declartion in gobal
-    //     nexusUrl = '44.192.3.23:8081'
-    // }
+    environment{
+        def appVersion = '' //variable declartion in gobal
+        nexusUrl = '44.192.3.23:8081'
+    }
        
     stages {
         stage('print  the version'){
