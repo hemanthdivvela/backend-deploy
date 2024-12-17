@@ -25,6 +25,24 @@ pipeline {
                 }
             }
         }
+        stage('Init'){
+            steps {
+                sh """
+                    cd terraform
+                    terraform init
+
+                """  
+            }
+        }
+        stage('Plan'){
+            steps {
+                sh """
+                    cd terraform
+                    terraform plan -var="app_version=${params.appVersion}"
+
+                """  
+            }
+        }
 
         
         
