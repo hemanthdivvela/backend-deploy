@@ -21,9 +21,10 @@ pipeline {
             steps {
                 script{
 
-                    echo "application version: ${app}"
+                    echo "application version: ${params.appVersion}"
                 }
             }
+        }
 
         
         
