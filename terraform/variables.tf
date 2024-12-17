@@ -23,6 +23,6 @@ variable "zone-name" {
   
 }
 
-variable "app_Version" {
+variable "app_version" {
   
 }
