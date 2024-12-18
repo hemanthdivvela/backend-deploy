@@ -1,7 +1,7 @@
 module "backend" {
   source  = "terraform-aws-modules/ec2-instance/aws"
   
-  name = "${var.project_name}-${var.environment}-${var.common_tags.component}"
+  name = "${var.project_name}-${var.environment}-${var.common_tags.Component}"
 
   instance_type          = "t3.micro"
   vpc_security_group_ids = [data.aws_ssm_parameter.backend_sg_id.value]
@@ -13,7 +13,7 @@ module "backend" {
   tags = merge(
     var.common_tags,
     {
-      Name = "${var.project_name}-${var.environment}-${var.common_tags.component}"
+      Name = "${var.project_name}-${var.environment}-${var.common_tags.Component}"
     }
   )
 }
@@ -32,16 +32,16 @@ resource "null_resource" "backend" {
     }
 
     provisioner "file" {
-        source = "backend.sh"
-        destination = "/tmp/backend.sh"
+        source = "${var.common_tags.Component}.sh"
+        destination = "/tmp/${var.common_tags.Component}.sh"
       
     }
 
     # remote server run
     provisioner "remote-exec" {
         inline = [ 
-            "chmod +x /tmp/backend.sh",
-            "sudo sh /tmp/backend.sh ${var.common_tags.component} ${var.environment} ${var.app_version}"
+            "chmod +x /tmp/${var.common_tags.Component}.sh",
+            "sudo sh /tmp/${var.common_tags.Component}.sh ${var.common_tags.Component} ${var.environment} ${var.app_version}"
          ]
       
     }
@@ -57,7 +57,7 @@ resource "aws_ec2_instance_state" "backend" {
 }
 
 resource "aws_ami_from_instance" "backend" {
-  name = "${var.project_name}-${var.environment}-${var.common_tags.component}"
+  name = "${var.project_name}-${var.environment}-${var.common_tags.Component}"
   source_instance_id = module.backend.id
   depends_on = [ aws_ec2_instance_state.backend ]
 }
@@ -85,7 +85,7 @@ resource "null_resource" "backend_delete" {
 #aws traget group and health checks
 
 resource "aws_lb_target_group" "backend" {
-  name = "${var.project_name}-${var.environment}-${var.common_tags.component}"
+  name = "${var.project_name}-${var.environment}-${var.common_tags.Component}"
   port = 8080
   protocol = "HTTP"
   vpc_id = data.aws_ssm_parameter.vpc_id.value
@@ -101,7 +101,7 @@ resource "aws_lb_target_group" "backend" {
 }
 
 resource "aws_launch_template" "backend" {
-  name = "${var.project_name}-${var.environment}-${var.common_tags.component}"
+  name = "${var.project_name}-${var.environment}-${var.common_tags.Component}"
 
   image_id = aws_ami_from_instance.backend.id
 
@@ -118,7 +118,7 @@ resource "aws_launch_template" "backend" {
     tags = merge(
       var.common_tags,
       {
-        Name = "${var.project_name}-${var.environment}-${var.common_tags.component}"
+        Name = "${var.project_name}-${var.environment}-${var.common_tags.Component}"
       }
     )
   }
@@ -128,7 +128,7 @@ resource "aws_launch_template" "backend" {
 
 
 resource "aws_autoscaling_group" "backend" {
-  name                      = "${var.project_name}-${var.environment}-${var.common_tags.component}"
+  name                      = "${var.project_name}-${var.environment}-${var.common_tags.Component}"
   max_size                  = 5
   min_size                  = 1
   health_check_grace_period = 60
@@ -151,7 +151,7 @@ resource "aws_autoscaling_group" "backend" {
 
   tag {
     key                 = "Name"
-    value               = "${var.project_name}-${var.environment}-${var.common_tags.component}"
+    value               = "${var.project_name}-${var.environment}-${var.common_tags.Component}"
     propagate_at_launch = true
   }
 
@@ -167,7 +167,7 @@ resource "aws_autoscaling_group" "backend" {
 }
 
 resource "aws_autoscaling_policy" "backend" {
-  name                   = "${var.project_name}-${var.environment}-${var.common_tags.component}"
+  name                   = "${var.project_name}-${var.environment}-${var.common_tags.Component}"
    policy_type            = "TargetTrackingScaling"
   autoscaling_group_name = aws_autoscaling_group.backend.name
 
